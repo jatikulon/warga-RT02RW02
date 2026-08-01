@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <!-- 1. Nomor 1: Meta Tag Tambahan untuk SEO atau PWA / Pengaturan Karakter -->
+    <meta name="description" content="Sistem Informasi Keuangan RT 002 RW 002 berbasis Supabase">
+    <meta name="theme-color" content="#3b82f6">
+
+    <!-- 2. Nomor 2: Penambahan Pustaka Eksternal Tambahan (Contoh: SweetAlert2 untuk Notifikasi Modern) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- 3. Nomor 3: Custom CSS tambahan untuk mempercantik transisi atau komponen spesifik -->
+    <style>
+        .custom-notification-banner {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+    </style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Keuangan RT - Supabase</title>
@@ -63,7 +82,7 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             padding: 32px;
             border-radius: 16px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
@@ -92,19 +111,19 @@
 
         .role-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
             margin-bottom: 20px;
         }
 
         .role-btn {
-            padding: 10px;
+            padding: 8px 2px;
             border: 1px solid var(--border);
             background: var(--light);
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: #64748b;
             text-align: center;
             transition: all 0.2s;
@@ -148,7 +167,6 @@
             gap: 8px;
         }
 
-        /* TOMBOL MENU TRANSPARAN & SEMBUNYI SAAT SIDEBAR AKTIF */
         .sidebar-toggle-btn {
             position: fixed;
             top: 16px;
@@ -295,7 +313,6 @@
             font-size: 1.75rem;
         }
 
-        /* STYLE UNTUK LOGO DI KANAN ATAS */
         .header-logo {
             height: 150px;
             width: auto;
@@ -303,7 +320,6 @@
             margin-top: -10px;
         }
 
-        /* STYLE KOTAK INFORMASI / PENGUMUMAN DI DASHBOARD */
         .info-box-dashboard {
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             border: 1px solid #bfdbfe;
@@ -396,36 +412,6 @@
             overflow-x: auto;
             border: 1px solid var(--border);
             border-radius: 8px;
-        }
-
-        .table-scrollable-y table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .table-scrollable-y th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .table-scrollable-y tfoot th,
-        .table-scrollable-y tfoot td {
-            position: sticky;
-            z-index: 10;
-            box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .table-scrollable-y tfoot tr:nth-last-child(1) td,
-        .table-scrollable-y tfoot tr:nth-last-child(1) th {
-            bottom: 0;
-            background-color: #f5f3ff !important;
-        }
-        .table-scrollable-y tfoot tr:nth-last-child(2) td,
-        .table-scrollable-y tfoot tr:nth-last-child(2) th {
-            bottom: 44px;
-            background-color: #f0fdf4 !important;
         }
 
         table {
@@ -598,16 +584,6 @@
         .val-12 { background-color: #fef3c7 !important; color: #92400e !important; border-color: #fde68a !important; }
         .val-libur { background-color: #f1f5f9 !important; color: #64748b !important; border-color: #cbd5e1 !important; font-weight: normal; }
 
-        .select-jenis {
-            padding: 4px 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            cursor: pointer;
-        }
-
         .action-group {
             display: flex;
             gap: 6px;
@@ -665,7 +641,13 @@
             
             <div class="role-selector">
                 <div class="role-btn active" id="role-admin-btn" onclick="selectLoginRole('admin')">
-                    <i data-lucide="shield"></i> Admin RT
+                    <i data-lucide="shield"></i> Admin
+                </div>
+                <div class="role-btn" id="role-bendahara-btn" onclick="selectLoginRole('bendahara')">
+                    <i data-lucide="dollar-sign"></i> Bendahara
+                </div>
+                <div class="role-btn" id="role-sekretaris-btn" onclick="selectLoginRole('sekretaris')">
+                    <i data-lucide="file-text"></i> Sekretaris
                 </div>
                 <div class="role-btn" id="role-warga-btn" onclick="selectLoginRole('warga')">
                     <i data-lucide="user"></i> Warga
@@ -673,10 +655,10 @@
             </div>
 
             <form id="form-login" onsubmit="prosesLogin(event)">
-                <div id="admin-inputs">
+                <div id="credential-inputs">
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label>Username Admin</label>
-                        <input type="text" id="login-username" placeholder="Masukkan username admin">
+                        <label id="label-login-user">Username</label>
+                        <input type="text" id="login-username" placeholder="Masukkan username">
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label>Password</label>
@@ -686,7 +668,7 @@
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
                         <input type="checkbox" id="remember-me" style="width: 16px; height: 16px; cursor: pointer;">
                         <label for="remember-me" style="font-size: 0.85rem; color: #475569; cursor: pointer; user-select: none;">
-                            Simpan Username & Password
+                            Simpan Kredensial
                         </label>
                     </div>
                 </div>
@@ -716,24 +698,22 @@
         <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard', event)">
             <i data-lucide="layout-dashboard"></i> Dashboard
         </div>
-        <div class="nav-item admin-only" id="nav-saldo" onclick="switchTab('saldo', event)">
+        <div class="nav-item role-access-bendahara" id="nav-saldo" onclick="switchTab('saldo', event)">
             <i data-lucide="book-open"></i> Buku Kas
         </div>
-        <div class="nav-item admin-only" id="nav-iuran" onclick="switchTab('iuran', event)">
+        <div class="nav-item role-access-bendahara" id="nav-iuran" onclick="switchTab('iuran', event)">
             <i data-lucide="users"></i> Data Warga
         </div>
-        <div class="nav-item admin-only" id="nav-pengumuman" onclick="switchTab('pengumuman', event)">
-            <i data-lucide="info"></i> Kelola Info Warga
+        <div class="nav-item role-access-sekretaris" id="nav-pengumuman" onclick="switchTab('pengumuman', event)">
+            <i data-lucide="info"></i> Info Warga
         </div>
-        <!-- MENU NERACA TAHUNAN & LAPORAN TAHUNAN (ADMIN ONLY) -->
-        <div class="nav-item admin-only" id="nav-neraca" onclick="switchTab('neraca', event)">
+        <div class="nav-item role-access-bendahara" id="nav-neraca" onclick="switchTab('neraca', event)">
             <i data-lucide="scale"></i> Neraca Tahunan
         </div>
-        <div class="nav-item admin-only" id="nav-laporan" onclick="switchTab('laporan', event)">
+        <div class="nav-item role-access-bendahara" id="nav-laporan" onclick="switchTab('laporan', event)">
             <i data-lucide="file-text"></i> Laporan Tahunan
         </div>
-        <!-- MENU SETTING (ADMIN ONLY) -->
-        <div class="nav-item admin-only" id="nav-setting" onclick="switchTab('setting', event)">
+        <div class="nav-item role-access-admin" id="nav-setting" onclick="switchTab('setting', event)">
             <i data-lucide="settings"></i> Pengaturan Sistem
         </div>
 
@@ -820,9 +800,15 @@
             </div>
 
             <div class="panel">
-                <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                     <span><i data-lucide="users"></i> Rekap Iuran Warga (View Only)</span>
-                    <span id="label-tahun-dashboard" style="font-size: 0.9rem; font-weight: bold; color: var(--primary);">Tahun: 2026</span>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="position:relative;">
+                            <input type="text" id="search-dashboard-warga" placeholder="Cari nama warga..." oninput="renderDashboardIuran()" style="padding: 6px 12px 6px 30px; font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border); width: 200px;">
+                            <i data-lucide="search" style="position:absolute; left:8px; top:10px; width:14px; height:14px; color:#64748b;"></i>
+                        </div>
+                        <span id="label-tahun-dashboard" style="font-size: 0.9rem; font-weight: bold; color: var(--primary);">Tahun: 2026</span>
+                    </div>
                 </div>
                 <div class="table-responsive table-scrollable-y">
                     <table>
@@ -850,12 +836,12 @@
             </div>
         </div>
 
-        <!-- SECTION: KELOLA INFO WARGA (ADMIN ONLY) -->
+        <!-- SECTION: INFO WARGA (ADMIN & SEKRETARIS) -->
         <div id="pengumuman" class="content-section">
             <div class="panel">
                 <div class="panel-title"><i data-lucide="edit-3"></i> Perbarui Kotak Informasi / Pengumuman Warga</div>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-                    Isi form di bawah ini untuk mengubah informasi atau pengumuman penting yang akan langsung tampil di bagian atas Halaman Dashboard warga.
+                    Isi form di bawah ini untuk mengubah informasi atau pengumuman penting yang akan langsung tampil di bagian atas Halaman Dashboard warga. Riwayat perubahan akan disimpan otomatis.
                 </p>
                 <form id="form-pengumuman" onsubmit="simpanPengumuman(event)">
                     <div class="form-group" style="margin-bottom: 16px;">
@@ -871,9 +857,32 @@
                     </button>
                 </form>
             </div>
+
+            <!-- TABEL RIWAYAT / HISTORY PENGUMUMAN -->
+            <div class="panel">
+                <div class="panel-title"><i data-lucide="clock"></i> Riwayat History Kotak Informasi (Supabase)</div>
+                <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 16px;">
+                    Daftar log perubahan informasi atau pengumuman yang pernah diperbarui oleh pengurus.
+                </p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Waktu Perubahan</th>
+                                <th>Judul Informasi</th>
+                                <th>Isi Pesan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-history-pengumuman">
+                            <!-- Diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- SECTION: BUKU KAS (ADMIN ONLY) -->
+        <!-- SECTION: BUKU KAS (BENDAHARA & ADMIN) -->
         <div id="saldo" class="content-section">
             <div class="cards-grid" style="margin-bottom: 24px;">
                 <div class="card" style="border-left: 4px solid var(--primary);">
@@ -966,7 +975,7 @@
             </div>
         </div>
 
-        <!-- SECTION: DATA IURAN WARGA (ADMIN ONLY) -->
+        <!-- SECTION: DATA IURAN WARGA (BENDAHARA & ADMIN) -->
         <div id="iuran" class="content-section">
             <div class="panel">
                 <div class="panel-title"><i data-lucide="user-plus"></i> Tambah Data Warga Baru</div>
@@ -1000,14 +1009,21 @@
 
                 <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                     <span><i data-lucide="users"></i> Data Iuran Warga</span>
-                    <div class="action-group">
-                        <button class="btn-action btn-export" onclick="exportDataWargaExcel()">
-                            <i data-lucide="file-spreadsheet" style="width:14px;height:14px;"></i> Export Excel (.xlsx)
-                        </button>
-                        <button class="btn-action btn-import" onclick="triggerImportWarga()">
-                            <i data-lucide="upload" style="width:14px;height:14px;"></i> Import Excel (.xlsx)
-                        </button>
-                        <input type="file" id="import-file-input" accept=".xlsx, .xls" style="display:none;" onchange="importDataWargaExcel(event)">
+                    
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <div style="position:relative;">
+                            <input type="text" id="search-admin-warga" placeholder="Cari nama warga..." oninput="renderMatriksIuran()" style="padding: 6px 12px 6px 30px; font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border); width: 220px;">
+                            <i data-lucide="search" style="position:absolute; left:8px; top:10px; width:14px; height:14px; color:#64748b;"></i>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-action btn-export" onclick="exportDataWargaExcel()">
+                                <i data-lucide="file-spreadsheet" style="width:14px;height:14px;"></i> Export Excel (.xlsx)
+                            </button>
+                            <button class="btn-action btn-import" onclick="triggerImportWarga()">
+                                <i data-lucide="upload" style="width:14px;height:14px;"></i> Import Excel (.xlsx)
+                            </button>
+                            <input type="file" id="import-file-input" accept=".xlsx, .xls" style="display:none;" onchange="importDataWargaExcel(event)">
+                        </div>
                     </div>
                 </div>
 
@@ -1074,7 +1090,7 @@
             </div>
         </div>
 
-        <!-- SECTION NERACA TAHUNAN (ADMIN ONLY) -->
+        <!-- SECTION NERACA TAHUNAN (BENDAHARA & ADMIN) -->
         <div id="neraca" class="content-section">
             <div class="panel">
                 <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center;">
@@ -1123,7 +1139,7 @@
             </div>
         </div>
 
-        <!-- SECTION LAPORAN TAHUNAN (ADMIN ONLY) -->
+        <!-- SECTION LAPORAN TAHUNAN (BENDAHARA & ADMIN) -->
         <div id="laporan" class="content-section">
             <div class="panel">
                 <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center;">
@@ -1194,25 +1210,61 @@
         <!-- SECTION: PENGATURAN SISTEM / SETTING (ADMIN ONLY) -->
         <div id="setting" class="content-section">
             <div class="panel">
-                <div class="panel-title"><i data-lucide="settings"></i> Pengaturan Kredensial & Akun Admin</div>
+                <div class="panel-title"><i data-lucide="user-plus"></i> Manajemen Akun Pengguna (Supabase Database)</div>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-                    Ubah username dan password akun Admin RT yang digunakan untuk masuk ke dalam sistem.
+                    Tambah akun baru, edit, atau hapus kredensial hak akses pengguna (Admin, Bendahara, Sekretaris, Warga) yang tersimpan secara sinkron pada tabel <code>users</code> di Supabase.
                 </p>
-                <form id="form-setting-admin" onsubmit="simpanPengaturanAdmin(event)">
-                    <div class="form-grid" style="margin-bottom: 16px;">
+
+                <!-- Form Tambah / Edit Akun -->
+                <form id="form-manage-user" onsubmit="simpanAkunPengguna(event)" style="background: var(--light); padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
+                    <input type="hidden" id="user-edit-id">
+                    <h4 style="margin-bottom: 12px; font-size: 0.95rem; color: var(--primary);" id="form-user-title">Form Tambah Akun Baru</h4>
+                    <div class="form-grid" style="margin-bottom: 12px;">
                         <div class="form-group">
-                            <label>Username Admin Baru</label>
-                            <input type="text" id="setting-admin-user" placeholder="Username baru" required>
+                            <label>Username / Nama Akun</label>
+                            <input type="text" id="input-username-sys" placeholder="Contoh: sekretaris01" required>
                         </div>
                         <div class="form-group">
-                            <label>Password Admin Baru</label>
-                            <input type="password" id="setting-admin-pass" placeholder="Password baru" required>
+                            <label>Password Akun</label>
+                            <input type="text" id="input-password-sys" placeholder="Masukkan password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Role / Hak Akses</label>
+                            <select id="input-role-sys" required>
+                                <option value="admin">Admin (Akses Penuh)</option>
+                                <option value="bendahara">Bendahara (Keuangan)</option>
+                                <option value="sekretaris">Sekretaris (Dashboard & Info Warga)</option>
+                                <option value="warga">Warga (View Only)</option>
+                            </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary" style="padding: 10px 20px;">
-                        <i data-lucide="shield-check"></i> Perbarui Kredensial Admin
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="btn-primary" style="padding: 8px 16px;">
+                            <i data-lucide="save"></i> Simpan Akun ke Supabase
+                        </button>
+                        <button type="button" class="btn-action" id="btn-cancel-edit" onclick="resetFormUser()" style="display:none; background:#e2e8f0; color:#334155;">
+                            Batal
+                        </button>
+                    </div>
                 </form>
+
+                <!-- Tabel Daftar Akun Pengguna -->
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Username</th>
+                                <th>Role / Hak Akses</th>
+                                <th>Password (Teks)</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-users-body">
+                            <!-- Diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="panel">
@@ -1230,7 +1282,7 @@
             </div>
 
             <div class="panel">
-                <div class="panel-title"><i data-lucide="database"></i> Informasi Koneksi Basis Data</div>
+                <div class="panel-title"><i data-lucide="database"></i> Informasi Koneksi Basis Data Supabase</div>
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Supabase URL</label>
@@ -1263,46 +1315,76 @@
 
         let bukuKas = [];
         let dataWarga = [];
+        let systemUsers = []; 
         let informasiRT = { judul: "", pesan: "" };
+        let historyPengumuman = []; // Variabel penampung history pengumuman dari Supabase
         let tahunAktif = 2026; 
         let tahunFilterGlobal = "2026"; 
-
-        let ADMIN_CREDENTIALS = {
-            username: "admin",
-            password: "123"
-        };
 
         let selectedRoleLogin = "admin";
         let currentUserRole = null; 
 
         window.addEventListener('DOMContentLoaded', () => {
-            muatKredensialTersimpan();
             muatPengaturanLokal();
+            muatDataPenggunaSupabase();
+            muatHistoryPengumumanSupabase(); // Muat riwayat history pengumuman
             if(window.lucide) lucide.createIcons();
         });
 
-        function muatKredensialTersimpan() {
-            const savedUser = localStorage.getItem('rt_saved_user');
-            const savedPass = localStorage.getItem('rt_saved_pass');
-            if (savedUser && savedPass) {
-                document.getElementById('login-username').value = savedUser;
-                document.getElementById('login-password').value = savedPass;
-                document.getElementById('remember-me').checked = true;
+        async function muatDataPenggunaSupabase() {
+            try {
+                const { data, error } = await supabaseClient.from('users').select('*').order('id', { ascending: true });
+                if (!error && data) {
+                    systemUsers = data;
+                } else {
+                    systemUsers = [
+                        { id: 1, username: 'admin', password: '123', role: 'admin' },
+                        { id: 2, username: 'bendahara', password: '123', role: 'bendahara' },
+                        { id: 3, username: 'sekretaris', password: '123', role: 'sekretaris' }
+                    ];
+                }
+                renderTableUsers();
+            } catch (err) {
+                console.log("Menggunakan akun lokal default:", err.message);
+            }
+        }
+
+        // FUNGSI UNTUK MEMUAT HISTORY PENGUMUMAN DARI TABEL SUPABASE
+        async function muatHistoryPengumumanSupabase() {
+            try {
+                const { data, error } = await supabaseClient.from('pengumuman_history').select('*').order('created_at', { ascending: false });
+                if (!error && data) {
+                    historyPengumuman = data;
+                } else {
+                    historyPengumuman = [];
+                }
+                renderHistoryPengumuman();
+            } catch (err) {
+                console.log("Gagal memuat history pengumuman:", err.message);
+            }
+        }
+
+        function renderHistoryPengumuman() {
+            const tbody = document.getElementById('table-history-pengumuman');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            if(historyPengumuman.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center" style="color:#64748b; padding:16px;">Belum ada riwayat history perubahan informasi.</td></tr>`;
+                return;
             }
 
-            const customAdminUser = localStorage.getItem('rt_admin_user');
-            const customAdminPass = localStorage.getItem('rt_admin_pass');
-            if (customAdminUser && customAdminPass) {
-                ADMIN_CREDENTIALS.username = customAdminUser;
-                ADMIN_CREDENTIALS.password = customAdminPass;
-            }
-
-            const settingUser = document.getElementById('setting-admin-user');
-            const settingPass = document.getElementById('setting-admin-pass');
-            if (settingUser && settingPass) {
-                settingUser.value = ADMIN_CREDENTIALS.username;
-                settingPass.value = ADMIN_CREDENTIALS.password;
-            }
+            historyPengumuman.forEach((item, index) => {
+                let tanggalFormat = item.created_at ? new Date(item.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><small style="color:#64748b; font-weight:600;">${tanggalFormat}</small></td>
+                        <td><strong>${item.judul}</strong></td>
+                        <td><div style="max-height:60px; overflow-y:auto; font-size:0.85rem; color:#334155; white-space:pre-line;">${item.pesan}</div></td>
+                    </tr>
+                `;
+            });
         }
 
         function muatPengaturanLokal() {
@@ -1320,24 +1402,6 @@
             localStorage.setItem('rt_theme_primary', primaryColor);
             localStorage.setItem('rt_theme_light', lightColor);
             alert("Tema warna aplikasi berhasil diubah!");
-        }
-
-        function simpanPengaturanAdmin(e) {
-            e.preventDefault();
-            const newUser = document.getElementById('setting-admin-user').value.trim();
-            const newPass = document.getElementById('setting-admin-pass').value.trim();
-
-            if (!newUser || !newPass) {
-                alert("Username dan password tidak boleh kosong!");
-                return;
-            }
-
-            ADMIN_CREDENTIALS.username = newUser;
-            ADMIN_CREDENTIALS.password = newPass;
-            localStorage.setItem('rt_admin_user', newUser);
-            localStorage.setItem('rt_admin_pass', newPass);
-
-            alert("Kredensial akun admin berhasil diperbarui!");
         }
 
         function setTanggalOtomatis() {
@@ -1370,58 +1434,97 @@
         function selectLoginRole(role) {
             selectedRoleLogin = role;
             const adminBtn = document.getElementById('role-admin-btn');
+            const bendaharaBtn = document.getElementById('role-bendahara-btn');
+            const sekretarisBtn = document.getElementById('role-sekretaris-btn');
             const wargaBtn = document.getElementById('role-warga-btn');
-            const adminInputs = document.getElementById('admin-inputs');
+            const credentialInputs = document.getElementById('credential-inputs');
             const wargaInputs = document.getElementById('warga-inputs');
+            const labelUser = document.getElementById('label-login-user');
+
+            adminBtn.classList.remove('active');
+            bendaharaBtn.classList.remove('active');
+            sekretarisBtn.classList.remove('active');
+            wargaBtn.classList.remove('active');
 
             if (role === 'admin') {
                 adminBtn.classList.add('active');
-                wargaBtn.classList.remove('active');
-                adminInputs.style.display = 'block';
+                credentialInputs.style.display = 'block';
                 wargaInputs.style.display = 'none';
+                labelUser.innerText = 'Username Admin';
+            } else if (role === 'bendahara') {
+                bendaharaBtn.classList.add('active');
+                credentialInputs.style.display = 'block';
+                wargaInputs.style.display = 'none';
+                labelUser.innerText = 'Username Bendahara';
+            } else if (role === 'sekretaris') {
+                sekretarisBtn.classList.add('active');
+                credentialInputs.style.display = 'block';
+                wargaInputs.style.display = 'none';
+                labelUser.innerText = 'Username Sekretaris';
             } else {
                 wargaBtn.classList.add('active');
-                adminBtn.classList.remove('active');
-                adminInputs.style.display = 'none';
+                credentialInputs.style.display = 'none';
                 wargaInputs.style.display = 'block';
             }
         }
 
-        function prosesLogin(e) {
+        async function prosesLogin(e) {
             e.preventDefault();
-            if (selectedRoleLogin === 'admin') {
-                const u = document.getElementById('login-username').value.trim();
-                const p = document.getElementById('login-password').value.trim();
-                const rememberMe = document.getElementById('remember-me').checked;
+            if (selectedRoleLogin === 'warga') {
+                setSession('warga', 'Warga RT');
+                return;
+            }
 
-                if (u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password) {
-                    if (rememberMe) {
-                        localStorage.setItem('rt_saved_user', u);
-                        localStorage.setItem('rt_saved_pass', p);
-                    } else {
-                        localStorage.removeItem('rt_saved_user');
-                        localStorage.removeItem('rt_saved_pass');
-                    }
-                    setSession('admin');
-                } else {
-                    alert('Username atau Password Admin salah!');
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+
+            let matchedUser = systemUsers.find(usr => usr.username === u && usr.password === p && usr.role === selectedRoleLogin);
+
+            if (!matchedUser) {
+                if (selectedRoleLogin === 'admin' && u === 'admin' && p === '123') {
+                    matchedUser = { username: 'admin', role: 'admin' };
+                } else if (selectedRoleLogin === 'bendahara' && u === 'bendahara' && p === '123') {
+                    matchedUser = { username: 'bendahara', role: 'bendahara' };
+                } else if (selectedRoleLogin === 'sekretaris' && u === 'sekretaris' && p === '123') {
+                    matchedUser = { username: 'sekretaris', role: 'sekretaris' };
                 }
+            }
+
+            if (matchedUser) {
+                setSession(matchedUser.role, matchedUser.username);
             } else {
-                setSession('warga');
+                alert(`Username atau Password ${selectedRoleLogin} salah!`);
             }
         }
 
-        function setSession(role) {
+        function setSession(role, username) {
             currentUserRole = role;
             document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('display-user-role').innerText = "Role: " + (role === 'admin' ? 'Admin RT' : 'Warga');
+            document.getElementById('display-user-role').innerText = `Role: ${role.toUpperCase()} (${username})`;
             
-            const adminNavs = document.querySelectorAll('.admin-only');
+            const adminOnlyNavs = document.querySelectorAll('.role-access-admin');
+            const bendaharaNavs = document.querySelectorAll('.role-access-bendahara');
+            const sekretarisNavs = document.querySelectorAll('.role-access-sekretaris');
+
             if (role === 'warga') {
-                adminNavs.forEach(el => el.style.display = 'none');
+                bendaharaNavs.forEach(el => el.style.display = 'none');
+                sekretarisNavs.forEach(el => el.style.display = 'none');
+                adminOnlyNavs.forEach(el => el.style.display = 'none');
+                switchTab('dashboard');
+            } else if (role === 'sekretaris') {
+                bendaharaNavs.forEach(el => el.style.display = 'none');
+                sekretarisNavs.forEach(el => el.style.display = 'flex'); 
+                adminOnlyNavs.forEach(el => el.style.display = 'none');
+                switchTab('dashboard');
+            } else if (role === 'bendahara') {
+                bendaharaNavs.forEach(el => el.style.display = 'flex');
+                sekretarisNavs.forEach(el => el.style.display = 'none');
+                adminOnlyNavs.forEach(el => el.style.display = 'none');
                 switchTab('dashboard');
             } else {
-                adminNavs.forEach(el => el.style.display = 'flex');
+                bendaharaNavs.forEach(el => el.style.display = 'flex');
+                sekretarisNavs.forEach(el => el.style.display = 'flex');
+                adminOnlyNavs.forEach(el => el.style.display = 'flex');
                 switchTab('dashboard');
             }
 
@@ -1433,7 +1536,8 @@
             if (confirm("Apakah Anda yakin ingin keluar?")) {
                 currentUserRole = null;
                 document.getElementById('login-modal').style.display = 'flex';
-                muatKredensialTersimpan();
+                document.getElementById('form-login').reset();
+                selectLoginRole('admin');
             }
         }
 
@@ -1464,6 +1568,101 @@
             }
 
             await muatDataAplikasi();
+        }
+
+        async function simpanAkunPengguna(e) {
+            e.preventDefault();
+            const editId = document.getElementById('user-edit-id').value;
+            const username = document.getElementById('input-username-sys').value.trim();
+            const password = document.getElementById('input-password-sys').value.trim();
+            const role = document.getElementById('input-role-sys').value;
+
+            if (!username || !password) {
+                alert("Username dan password tidak boleh kosong!");
+                return;
+            }
+
+            try {
+                if (editId) {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .update({ username, password, role })
+                        .eq('id', editId);
+                    if (error) throw error;
+                    alert("Akun pengguna berhasil diperbarui!");
+                } else {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .insert([{ username, password, role }]);
+                    if (error) throw error;
+                    alert("Akun baru berhasil didaftarkan ke sistem!");
+                }
+
+                resetFormUser();
+                await muatDataPenggunaSupabase();
+            } catch (err) {
+                alert("Gagal menyimpan akun ke Supabase: " + err.message);
+            }
+        }
+
+        function renderTableUsers() {
+            const tbody = document.getElementById('table-users-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (systemUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color:#64748b; padding:16px;">Belum ada data akun pengguna.</td></tr>`;
+                return;
+            }
+
+            systemUsers.forEach((usr, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${usr.username}</strong></td>
+                        <td><span class="badge" style="background:var(--primary-light); color:var(--primary); padding:2px 8px; border-radius:4px; font-weight:600;">${usr.role.toUpperCase()}</span></td>
+                        <td><code>${usr.password}</code></td>
+                        <td class="text-center">
+                            <button class="btn-action btn-edit" onclick="editAkunPengguna(${usr.id})"><i data-lucide="edit-2" style="width:12px;height:12px;"></i> Edit</button>
+                            <button class="btn-action btn-delete" onclick="hapusAkunPengguna(${usr.id})"><i data-lucide="trash-2" style="width:12px;height:12px;"></i> Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function editAkunPengguna(id) {
+            const usr = systemUsers.find(u => u.id === id);
+            if (!usr) return;
+
+            document.getElementById('user-edit-id').value = usr.id;
+            document.getElementById('input-username-sys').value = usr.username;
+            document.getElementById('input-password-sys').value = usr.password;
+            document.getElementById('input-role-sys').value = usr.role;
+
+            document.getElementById('form-user-title').innerText = `Edit Akun: ${usr.username}`;
+            document.getElementById('btn-cancel-edit').style.display = 'inline-block';
+        }
+
+        function resetFormUser() {
+            document.getElementById('form-manage-user').reset();
+            document.getElementById('user-edit-id').value = '';
+            document.getElementById('form-user-title').innerText = 'Form Tambah Akun Baru';
+            document.getElementById('btn-cancel-edit').style.display = 'none';
+        }
+
+        async function hapusAkunPengguna(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus akun pengguna ini dari sistem?")) {
+                try {
+                    const { error } = await supabaseClient.from('users').delete().eq('id', id);
+                    if (error) throw error;
+                    await muatDataPenggunaSupabase();
+                    alert("Akun berhasil dihapus!");
+                } catch (err) {
+                    alert("Gagal menghapus akun: " + err.message);
+                }
+            }
         }
 
         async function salinDataKeTahunBerikutnya() {
@@ -1543,8 +1742,10 @@
                     };
                 }
 
-                document.getElementById('input-info-judul').value = informasiRT.judul || '';
-                document.getElementById('input-info-pesan').value = informasiRT.pesan || '';
+                const inpJudul = document.getElementById('input-info-judul');
+                const inpPesan = document.getElementById('input-info-pesan');
+                if(inpJudul) inpJudul.value = informasiRT.judul || '';
+                if(inpPesan) inpPesan.value = informasiRT.pesan || '';
 
                 renderAll();
             } catch (err) {
@@ -1552,6 +1753,7 @@
             }
         }
 
+        // FUNGSI UNTUK MENYIMPAN PENGUMUMAN DAN MENCATAT KE TABEL HISTORY SUPABASE
         async function simpanPengumuman(e) {
             e.preventDefault();
             let judulBaru = document.getElementById('input-info-judul').value.trim();
@@ -1571,10 +1773,24 @@
 
                 if (error) throw error;
 
+                // Simpan juga ke tabel history pengumuman di Supabase
+                const { error: errHistory } = await supabaseClient.from('pengumuman_history').insert([{
+                    judul: judulBaru,
+                    pesan: pesanBaru,
+                    created_at: new Date().toISOString()
+                }]);
+
+                if(errHistory) {
+                    console.error("Gagal menyimpan ke history:", errHistory.message);
+                }
+
                 informasiRT.judul = judulBaru;
                 informasiRT.pesan = pesanBaru;
+                
+                await muatHistoryPengumumanSupabase();
                 renderAll();
-                alert("Kotak informasi warga berhasil diperbarui!");
+                
+                alert("Kotak informasi warga berhasil diperbarui dan history disimpan!");
                 switchTab('dashboard');
             } catch (err) {
                 alert("Gagal menyimpan informasi: " + err.message);
@@ -1586,8 +1802,16 @@
         }
 
         function switchTab(tabId, evt) {
-            if (currentUserRole === 'warga' && (tabId === 'saldo' || tabId === 'iuran' || tabId === 'pengumuman' || tabId === 'neraca' || tabId === 'laporan' || tabId === 'setting')) {
-                alert("Akses Ditolak! Halaman ini khusus untuk Admin.");
+            if (currentUserRole === 'warga' && tabId !== 'dashboard') {
+                alert("Akses Ditolak! Warga hanya memiliki akses ke Dashboard.");
+                return;
+            }
+            if (currentUserRole === 'sekretaris' && tabId !== 'dashboard' && tabId !== 'pengumuman') {
+                alert("Akses Ditolak! Sekretaris hanya bisa akses Dashboard dan Info Warga.");
+                return;
+            }
+            if (currentUserRole === 'bendahara' && (tabId === 'pengumuman' || tabId === 'setting')) {
+                alert("Akses Ditolak! Menu ini khusus untuk Admin RT / Sekretaris.");
                 return;
             }
 
@@ -1617,7 +1841,7 @@
                 'iuran': 'Data Iuran Warga',
                 'neraca': 'Neraca Keuangan Tahunan',
                 'laporan': 'Laporan Keuangan Tahunan',
-                'setting': 'Pengaturan Sistem & Konfigurasi'
+                'setting': 'Pengaturan Sistem & Manajemen Pengguna'
             };
             document.getElementById('page-title').innerText = titleMap[tabId];
             
@@ -2020,8 +2244,10 @@
             document.getElementById('title-stat-kaleng-dash').innerText = `KALENG SOSIAL (AKUMULASI) ${teksTahun}`;
             document.getElementById('title-stat-kaleng-buku').innerText = `KALENG SOSIAL (AKUMULASI) ${teksTahun}`;
 
-            document.getElementById('info-box-title-view').innerHTML = `<i data-lucide="info" style="width: 22px; height: 22px;"></i> ${informasiRT.judul || 'Informasi Warga RT'}`;
-            document.getElementById('info-box-desc-view').innerText = informasiRT.pesan || '';
+            const infoTitle = document.getElementById('info-box-title-view');
+            const infoDesc = document.getElementById('info-box-desc-view');
+            if(infoTitle) infoTitle.innerHTML = `<i data-lucide="info" style="width: 22px; height: 22px;"></i> ${informasiRT.judul || 'Informasi Warga RT'}`;
+            if(infoDesc) infoDesc.innerText = informasiRT.pesan || '';
 
             hitungUlangKas();
             renderNeracaDanLaporan();
@@ -2088,104 +2314,144 @@
                 }
             }
 
-            const dashIuranBody = document.getElementById('dashboard-iuran-view-body');
-            if(dashIuranBody) {
-                dashIuranBody.innerHTML = '';
-                if (dataWarga.length === 0) {
-                    dashIuranBody.innerHTML = `<tr><td colspan="14" class="text-center" style="padding: 20px; color: #94a3b8;">Belum ada data warga terdaftar untuk Tahun ${tahunAktif}.</td></tr>`;
-                } else {
-                    dataWarga.forEach(w => {
-                        let bulanCols = '';
-                        listBulan.forEach(bln => {
-                            let val = w[bln] || "";
-                            let colorClass = getColorClassForValue(val);
-                            bulanCols += `<td class="text-center"><span class="cell-badge ${colorClass}">${val}</span></td>`;
-                        });
-
-                        dashIuranBody.innerHTML += `
-                            <tr>
-                                <td>${w.no}</td>
-                                <td><span style="font-weight:600">${w.nama}</span></td>
-                                ${bulanCols}
-                            </tr>
-                        `;
-                    });
-                }
-            }
-
-            const matriksBody = document.getElementById('matriks-iuran-body');
-            if(matriksBody) {
-                matriksBody.innerHTML = '';
-                
-                let total17an = { jan: 0, feb: 0, mar: 0, apr: 0, mei: 0, jun: 0, jul: 0, agu: 0, sep: 0, okt: 0, nov: 0, des: 0 };
-                let totalSosial = { jan: 0, feb: 0, mar: 0, apr: 0, mei: 0, jun: 0, jul: 0, agu: 0, sep: 0, okt: 0, nov: 0, des: 0 };
-
-                if (dataWarga.length === 0) {
-                    matriksBody.innerHTML = `<tr><td colspan="16" class="text-center" style="padding: 20px; color: #94a3b8;">Belum ada data warga terdaftar di Tahun ${tahunAktif}. Gunakan tombol 'Buat Master Data Tahun Berikutnya' atau Import Excel.</td></tr>`;
-                } else {
-                    dataWarga.forEach((w, wIdx) => {
-                        let nilaiJenis = parseInt(w.jenis) || 10;
-                        let bulanCols = '';
-
-                        listBulan.forEach(bln => {
-                            let val = w[bln] || "";
-                            let colorClass = getColorClassForValue(val);
-
-                            if(val !== "" && String(val).toUpperCase() !== "LIBUR") {
-                                let targetBulanKe = parseInt(val);
-                                if(!isNaN(targetBulanKe) && targetBulanKe >= 1 && targetBulanKe <= 12) {
-                                    let namaBulanTarget = listBulan[targetBulanKe - 1];
-                                    if (nilaiJenis === 10) {
-                                        total17an[namaBulanTarget] += 5000;
-                                        totalSosial[namaBulanTarget] += 5000;
-                                    } else if (nilaiJenis === 5) {
-                                        totalSosial[namaBulanTarget] += 5000;
-                                    } else if (nilaiJenis === 60) {
-                                        total17an[namaBulanTarget] += 30000;
-                                        totalSosial[namaBulanTarget] += 30000;
-                                    }
-                                }
-                            }
-                            
-                            bulanCols += `
-                                <td class="text-center">
-                                    <input type="text" 
-                                           class="matrix-input ${colorClass}" 
-                                           value="${val}" 
-                                           onchange="updateMatriksIuran(${wIdx}, '${bln}', this.value)" />
-                                </td>`;
-                        });
-
-                        matriksBody.innerHTML += `
-                            <tr>
-                                <td>${w.no}</td>
-                                <td><span style="font-weight:600">${w.nama}</span></td>
-                                <td>
-                                    <select class="select-jenis" onchange="updateJenisWarga(${wIdx}, this.value)" style="color: ${nilaiJenis===60?'#991b1b':(nilaiJenis===10?'#1e40af':'#92400e')}">
-                                        <option value="10" ${nilaiJenis === 10 ? 'selected' : ''}>10</option>
-                                        <option value="5" ${nilaiJenis === 5 ? 'selected' : ''}>5</option>
-                                        <option value="60" ${nilaiJenis === 60 ? 'selected' : ''}>60</option>
-                                    </select>
-                                </td>
-                                ${bulanCols}
-                                <td class="text-center" style="white-space:nowrap;">
-                                    <button class="btn-action btn-edit" onclick="editNamaWarga(${wIdx})"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>
-                                    <button class="btn-action btn-delete" onclick="hapusWarga(${wIdx})"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                listBulan.forEach(b => {
-                    document.getElementById(`17-${b}`).innerText = formatRupiah(total17an[b]);
-                    document.getElementById(`soc-${b}`).innerText = formatRupiah(totalSosial[b]);
-                });
-            }
+            renderDashboardIuran();
+            renderMatriksIuran();
 
             if(window.lucide) lucide.createIcons();
         }
-   </script>
 
+        function renderDashboardIuran() {
+            const dashIuranBody = document.getElementById('dashboard-iuran-view-body');
+            if(!dashIuranBody) return;
+
+            const searchInput = document.getElementById('search-dashboard-warga');
+            const keyword = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            let filteredWarga = dataWarga;
+            if (keyword !== '') {
+                filteredWarga = dataWarga.filter(w => w.nama.toLowerCase().includes(keyword));
+            }
+
+            dashIuranBody.innerHTML = '';
+            if (filteredWarga.length === 0) {
+                dashIuranBody.innerHTML = `<tr><td colspan="14" class="text-center" style="padding: 20px; color: #94a3b8;">Tidak ada data warga yang cocok.</td></tr>`;
+                return;
+            }
+
+            const listBulan = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
+            filteredWarga.forEach(w => {
+                let bulanCols = '';
+                listBulan.forEach(bln => {
+                    let val = w[bln] || "";
+                    let colorClass = getColorClassForValue(val);
+                    bulanCols += `<td class="text-center"><span class="cell-badge ${colorClass}">${val}</span></td>`;
+                });
+
+                dashIuranBody.innerHTML += `
+                    <tr>
+                        <td>${w.no}</td>
+                        <td><span style="font-weight:600">${w.nama}</span></td>
+                        ${bulanCols}
+                    </tr>
+                `;
+            });
+        }
+
+        function renderMatriksIuran() {
+            const matriksBody = document.getElementById('matriks-iuran-body');
+            if(!matriksBody) return;
+
+            const searchInput = document.getElementById('search-admin-warga');
+            const keyword = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            let filteredWarga = dataWarga;
+            if (keyword !== '') {
+                filteredWarga = dataWarga.filter(w => w.nama.toLowerCase().includes(keyword));
+            }
+
+            matriksBody.innerHTML = '';
+            
+            let total17an = { jan: 0, feb: 0, mar: 0, apr: 0, mei: 0, jun: 0, jul: 0, agu: 0, sep: 0, okt: 0, nov: 0, des: 0 };
+            let totalSosial = { jan: 0, feb: 0, mar: 0, apr: 0, mei: 0, jun: 0, jul: 0, agu: 0, sep: 0, okt: 0, nov: 0, des: 0 };
+
+            const listBulan = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
+
+            dataWarga.forEach(w => {
+                let nilaiJenis = parseInt(w.jenis) || 10;
+                listBulan.forEach(bln => {
+                    let val = w[bln] || "";
+                    if(val !== "" && String(val).toUpperCase() !== "LIBUR") {
+                        let targetBulanKe = parseInt(val);
+                        if(!isNaN(targetBulanKe) && targetBulanKe >= 1 && targetBulanKe <= 12) {
+                            let namaBulanTarget = listBulan[targetBulanKe - 1];
+                            if (nilaiJenis === 10) {
+                                total17an[namaBulanTarget] += 5000;
+                                totalSosial[namaBulanTarget] += 5000;
+                            } else if (nilaiJenis === 5) {
+                                totalSosial[namaBulanTarget] += 5000;
+                            } else if (nilaiJenis === 60) {
+                                total17an[namaBulanTarget] += 30000;
+                                totalSosial[namaBulanTarget] += 30000;
+                            }
+                        }
+                    }
+                });
+            });
+
+            if (filteredWarga.length === 0) {
+                matriksBody.innerHTML = `<tr><td colspan="16" class="text-center" style="padding: 20px; color: #94a3b8;">Tidak ada data warga yang cocok dengan pencarian.</td></tr>`;
+            } else {
+                filteredWarga.forEach((w) => {
+                    let realIdx = dataWarga.findIndex(item => item.id === w.id);
+                    if(realIdx === -1) realIdx = dataWarga.indexOf(w);
+
+                    let nilaiJenis = parseInt(w.jenis) || 10;
+                    let bulanCols = '';
+
+                    listBulan.forEach(bln => {
+                        let val = w[bln] || "";
+                        let colorClass = getColorClassForValue(val);
+                        
+                        bulanCols += `
+                            <td class="text-center">
+                                <input type="text" 
+                                       class="matrix-input ${colorClass}" 
+                                       value="${val}" 
+                                       onchange="updateMatriksIuran(${realIdx}, '${bln}', this.value)" />
+                            </td>`;
+                    });
+
+                    matriksBody.innerHTML += `
+                        <tr>
+                            <td>${w.no}</td>
+                            <td><span style="font-weight:600; cursor:pointer;" onclick="editNamaWarga(${realIdx})" title="Klik untuk ubah nama">${w.nama}</span></td>
+                            <td>
+                                <select class="select-jenis" onchange="updateJenisWarga(${realIdx}, this.value)">
+                                    <option value="10" ${nilaiJenis===10?'selected':''}>10</option>
+                                    <option value="5" ${nilaiJenis===5?'selected':''}>5</option>
+                                    <option value="60" ${nilaiJenis===60?'selected':''}>60</option>
+                                </select>
+                            </td>
+                            ${bulanCols}
+                            <td class="text-center">
+                                <button class="btn-action btn-delete" onclick="hapusWarga(${realIdx})" title="Hapus Warga">
+                                    <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            listBulan.forEach(bln => {
+                const el17 = document.getElementById('17-' + bln);
+                const elSoc = document.getElementById('soc-' + bln);
+                if(el17) el17.innerText = formatRupiah(total17an[bln]);
+                if(elSoc) elSoc.innerText = formatRupiah(totalSosial[bln]);
+            });
+
+            if(window.lucide) lucide.createIcons();
+        }
+    </script>
 </body>
 </html>
